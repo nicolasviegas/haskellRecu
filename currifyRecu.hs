@@ -31,7 +31,7 @@ duracion = 146
 fuiHastaAhi :: Cancion
 fuiHastaAhi = Cancion{
 titulo = "Fui hasta ahi",
-genero = "rocks",
+genero = "rock",
 duracion = 279  
 }
 
@@ -39,7 +39,7 @@ rocketRaccon :: Cancion
 rocketRaccon = Cancion{
 titulo = "Rocket raccon",
 genero = "rap",
-duracion = 345  
+duracion = 8  
 }
 
 mientrasMiBateriaFesteja :: Cancion
@@ -52,8 +52,8 @@ duracion = 52
 tomateDeMadera :: Cancion
 tomateDeMadera = Cancion{
 titulo = "Tomate de madera",
-genero = "clasico",
-duracion = 482 
+genero = "pop",
+duracion = 34 
 }
 
 losEscarabajos :: Artista
@@ -76,6 +76,13 @@ nombre = "el tigre joaco",
 canciones = [],
 efectos = [acustizar 6]
 } 
+
+nico :: Artista
+nico = Artista {
+  nombre = "Nico",
+  canciones = [cafeParaDos,mientrasMiBateriaFesteja,tomateDeMadera,rocketRaccon],
+  efectos = [acortar]
+}
 
 -------------Functores----------------
 --Cancion
@@ -139,3 +146,22 @@ listaEfectos = [acortar,acustizar 5]
 
 --------------------
 --PARTE B
+
+artistasPio :: [Artista]
+artistasPio = [losEscarabajos,adela,nico,elTigreJoaco]
+
+
+vistazo :: Artista -> [Cancion]
+vistazo unArtista = take 3 . filter cancionesCortas $ canciones unArtista
+
+cancionesCortas :: Cancion -> Bool
+cancionesCortas unaCancion = duracion unaCancion < 150
+
+playlist :: Genero -> [Artista] -> [Cancion]
+playlist unGenero listaDeArtistas = filter (esCancionDeXGenero unGenero) $ cancionesDeTodos listaDeArtistas
+
+cancionesDeTodos :: [Artista] -> [Cancion]
+cancionesDeTodos = concatMap canciones 
+
+esCancionDeXGenero :: Genero -> Cancion -> Bool
+esCancionDeXGenero unGenero  = (==unGenero) . genero 
