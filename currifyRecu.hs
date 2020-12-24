@@ -17,7 +17,7 @@ data Cancion = Cancion {
 data Artista = Artista {
     nombre :: Nombre,
     canciones :: [CancionesDelArtista],
-    efectos :: [Efecto]
+    efecto :: [Efecto]
 } deriving Show
 
 
@@ -31,7 +31,7 @@ duracion = 146
 fuiHastaAhi :: Cancion
 fuiHastaAhi = Cancion{
 titulo = "Fui hasta ahi",
-genero = "rock",
+genero = "rock melancolico",
 duracion = 279  
 }
 
@@ -60,28 +60,28 @@ losEscarabajos :: Artista
 losEscarabajos = Artista {
 nombre = "los escarabajos",
 canciones = [rocketRaccon, mientrasMiBateriaFesteja, tomateDeMadera],
-efectos = [acortar]
+efecto = [acortar]
 } 
 
 adela :: Artista
 adela = Artista {
 nombre = "adela",
 canciones = [cafeParaDos, fuiHastaAhi],
-efectos = [remixar]
+efecto = [remixar]
 } 
 
 elTigreJoaco :: Artista
 elTigreJoaco = Artista {
 nombre = "el tigre joaco",
 canciones = [],
-efectos = [acustizar 6]
+efecto = [acustizar 6]
 } 
 
 nico :: Artista
 nico = Artista {
   nombre = "Nico",
   canciones = [cafeParaDos,mientrasMiBateriaFesteja,tomateDeMadera,rocketRaccon],
-  efectos = [acortar]
+  efecto = [acortar]
 }
 
 -------------Functores----------------
@@ -102,8 +102,8 @@ mapNombre funcionQueModifica unArtista = unArtista {nombre = funcionQueModifica 
 mapCanciones :: ([CancionesDelArtista] -> [CancionesDelArtista])  -> Artista -> Artista
 mapCanciones funcionQueModifica unArtista = unArtista {canciones = funcionQueModifica . canciones $ unArtista}
 
-mapEfectos :: ([Efecto] -> [Efecto]) -> Artista -> Artista
-mapEfectos funcionQueModifica unArtista = unArtista {efectos = funcionQueModifica . efectos $ unArtista}
+mapEfecto :: ([Efecto] -> [Efecto]) -> Artista -> Artista
+mapEfecto funcionQueModifica unArtista = unArtista {efecto = funcionQueModifica . efecto $ unArtista}
 
 ----------------
 --PARTE A 
@@ -129,11 +129,12 @@ cambiarDuracion duracionNueva _ = duracionNueva
 -------
 acustizar :: Int -> Efecto
 acustizar duracionCancion unaCancion 
-  | noEsAcustica unaCancion = (mapDuracion (cambiarDuracion duracionCancion). mapGenero (cambiarGenero "acustico")) unaCancion
+  | not $ esDeXGenero "acustico" unaCancion = (mapDuracion (cambiarDuracion duracionCancion). mapGenero (cambiarGenero "acustico")) unaCancion
   | otherwise = unaCancion
 
-noEsAcustica :: Cancion -> Bool
-noEsAcustica unaCancion = genero unaCancion /= "acustico"
+esDeXGenero :: Genero -> Cancion -> Bool
+esDeXGenero unGenero unaCancion = genero unaCancion == unGenero
+
 -------
 metaEfecto :: [Efecto] -> Efecto
 metaEfecto listaDeEfectos unaCancion = foldl aplicarUnEfecto unaCancion listaDeEfectos
@@ -150,7 +151,6 @@ listaEfectos = [acortar,acustizar 5]
 artistasPio :: [Artista]
 artistasPio = [losEscarabajos,adela,nico,elTigreJoaco]
 
-
 vistazo :: Artista -> [Cancion]
 vistazo unArtista = take 3 . filter cancionesCortas $ canciones unArtista
 
@@ -165,3 +165,23 @@ cancionesDeTodos = concatMap canciones
 
 esCancionDeXGenero :: Genero -> Cancion -> Bool
 esCancionDeXGenero unGenero  = (==unGenero) . genero 
+
+---------------------
+--PARTE C
+
+hacerseDj :: Artista -> Artista
+hacerseDj unArtista = mapCanciones (aplicarEfecto $ head $ efecto unArtista) unArtista
+
+aplicarEfecto :: Efecto -> [CancionesDelArtista] -> [CancionesDelArtista]
+aplicarEfecto unEfecto listaDeCanciones = map unEfecto listaDeCanciones
+--
+
+tieneGustoHomogeneo :: Artista -> Bool
+tieneGustoHomogeneo unArtista = all (esDeXGenero $ genero $ head $ canciones unArtista) $ canciones unArtista
+--
+
+formarBanda :: Nombre -> [Artista] -> Artista
+formarBanda unNombre listaDeArtista = Artista {nombre = unNombre,canciones = cancionesDeTodos listaDeArtista,efecto = efectosDeTodos listaDeArtista}
+
+efectosDeTodos :: [Artista] -> [Efecto]
+efectosDeTodos  = concatMap efecto
