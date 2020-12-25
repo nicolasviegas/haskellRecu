@@ -185,3 +185,25 @@ formarBanda unNombre listaDeArtista = Artista {nombre = unNombre,canciones = can
 
 efectosDeTodos :: [Artista] -> [Efecto]
 efectosDeTodos  = concatMap efecto
+
+obraMaestraProgresiva :: Artista -> Cancion
+obraMaestraProgresiva unArtista = Cancion{titulo = concatMap titulo $ canciones unArtista,
+                                          genero = (generoSuperador(mejorGenero $ listaDeGenerosDelArtista unArtista )) ++ " progresivo",
+                                          duracion = sum $ map duracion $ canciones unArtista}
+
+-- generoSuperador tengo que derivarlo que solo reciba un artista y devuelva uyn genero
+
+listaDeGenerosDelArtista :: Artista -> [Genero]
+listaDeGenerosDelArtista unArtista =  map genero $ canciones unArtista 
+
+mejorGenero :: [Genero] -> Genero
+mejorGenero [] = " "
+mejorGenero[genero1] = genero1
+mejorGenero (genero1:genero2:otrosGeneros)
+ | genero1 == "rock" = genero1
+ | genero2 == "rock" = genero2
+ | genero1 == "reggaeton" = mejorGenero (genero2:otrosGeneros)
+ | genero2 == "reggaeton" = mejorGenero (genero1:otrosGeneros)
+ | (length genero1) > (length genero2) = mejorGenero(genero1:otrosGeneros)
+ | (length genero2) > (length genero1) = mejorGenero(genero2:otrosGeneros)
+ | otherwise = "nati"
